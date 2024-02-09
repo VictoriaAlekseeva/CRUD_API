@@ -1,15 +1,20 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "es6",
+    "target": "ESNext",
+    "module": "ESNext",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "outDir": "dist"
+    "outDir": "./dist",
+    "baseUrl": "./"
   },
-  "include": ["./*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["./*.ts", "src/*.ts"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "experimentalSpecifierResolution": "node",
+    "esm": true,
+  }
 }

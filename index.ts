@@ -1,3 +1,5 @@
-import {db} from './dataBase'
+import { runServer } from './src/server';
 
-console.log(db)
+runServer();
+
+console.log(4455)
