@@ -1,6 +1,6 @@
 import url from 'url';
 import http from 'http';
-import { get, post, put } from './requestHandlers';
+import { get, post, put, deleteUser } from './requestHandlers';
 import 'dotenv/config';
 import { db } from './dataBase'
 
@@ -26,6 +26,11 @@ export const runServer = () => {
           console.log(url)
           if (url) put(url, req, res)
           break;
+        case ('DELETE'):
+          console.log(url)
+          if (url) deleteUser(url, req, res)
+          break;
+        default: console.log("method doesn't support")
       }
     });
     server.listen(PORT, () => {

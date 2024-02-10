@@ -12,10 +12,11 @@ export const get = (url: string, res: http.ServerResponse<http.IncomingMessage> 
     getAllUsers(url, res)
   } else if (url?.startsWith('/api/users/')) {
     getUser(url, res)
-  } else {
-    res.statusCode = 404;
-    res.end('Not Found');
   }
+  // else {
+  //   res.statusCode = 404;
+  //   res.end('Not Found');
+  // }
 }
 
 const getUser = (url: string, res: http.ServerResponse<http.IncomingMessage> & {
@@ -25,12 +26,12 @@ const getUser = (url: string, res: http.ServerResponse<http.IncomingMessage> & {
   const user = getUserById(userId);
   if (!uuidValidate(userId)) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end('Invalid userId: has to be an uuid string');
+    res.end('Invalid userId: it has to be an uuid string');
     return
   }
   if (!user) {
     res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ message: 'User not found' }));
+    res.end(JSON.stringify({ message: "User doesn't exist" }));
     return;
   }
   res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -90,14 +91,36 @@ export const put = (url: string, req: http.IncomingMessage, res: http.ServerResp
 
     if (!user) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: 'User not found' }));
+      res.end(JSON.stringify({ message: "User doesn't exist" }));
       return;
     }
     const newUserData = JSON.parse(body);
     const updateUser = {...user, ...newUserData};
     db[userIndex] = updateUser;
-    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(updateUser));
   })
 
+}
+
+export const deleteUser = (url: string, req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage> & {
+  req: http.IncomingMessage;
+}) => {
+  const userId = url.split('/')[3];
+  const user = getUserById(userId);
+  if (!uuidValidate(userId)) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end('Invalid userId: has to be an uuid string');
+    return
+  }
+  if (!user) {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ message: "User doesn't exist" }));
+    return;
+  }
+
+  const userIndex = db.findIndex(user => user.id === userId);
+  db.splice(userIndex, 1);
+  res.writeHead(204, { 'Content-Type': 'application/json' });
+  res.end();
 }
