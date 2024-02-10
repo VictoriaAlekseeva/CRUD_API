@@ -68,3 +68,36 @@ export const post = (url: string, req: http.IncomingMessage, res: http.ServerRes
     }
   })
 }
+
+export const put = (url: string, req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage> & {
+  req: http.IncomingMessage;
+}) => {
+
+  let body = '';
+  req.on('data', (chunk) => {
+    body += chunk;
+  });
+  req.on('end', () => {
+    const userId = url.split('/')[3];
+    const userIndex = db.findIndex(user => user.id === userId);
+    const user = db[userIndex];
+
+    if (!uuidValidate(userId)) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end('Invalid userId: has to be an uuid string');
+      return
+    }
+
+    if (!user) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ message: 'User not found' }));
+      return;
+    }
+    const newUserData = JSON.parse(body);
+    const updateUser = {...user, ...newUserData};
+    db[userIndex] = updateUser;
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(updateUser));
+  })
+
+}

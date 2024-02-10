@@ -1,6 +1,6 @@
 import url from 'url';
 import http from 'http';
-import { get, post } from './requestHandlers';
+import { get, post, put } from './requestHandlers';
 import 'dotenv/config';
 import { db } from './dataBase'
 
@@ -21,6 +21,10 @@ export const runServer = () => {
         case ('POST'):
           console.log(url)
           if (url) post(url, req, res)
+          break;
+        case ('PUT'):
+          console.log(url)
+          if (url) put(url, req, res)
           break;
       }
     });

@@ -7,16 +7,22 @@ export interface User {
 
 export const db: User[] = [
   {
-    id: '1',
-    username: 'test1',
-    age: 45,
-    hobbies: []
+      "id": "b6e4cdb0-b296-4df4-8bd4-b0f4b12c1be0",
+      "username": "6543",
+      "age": 8,
+      "hobbies": [
+          "",
+          "golf"
+      ]
   },
   {
-    id: '45',
-    username: 'test2',
-    age: 30,
-    hobbies: ['gaming', 'typing']
+      "id": "a82ca83f-03b8-4bad-9742-62f9d230dfb7",
+      "username": "6543test",
+      "age": 98,
+      "hobbies": [
+          "football",
+          "tennis"
+      ]
   }
 ];
 
