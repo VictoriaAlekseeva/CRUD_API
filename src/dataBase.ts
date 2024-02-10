@@ -1,11 +1,11 @@
-interface DB {
-  id: string,
+export interface User {
+  id?: string,
   username: string,
   age: number,
   hobbies: string[] | []
 }
 
-export const db: DB[] = [
+export const db: User[] = [
   {
     id: '1',
     username: 'test1',
@@ -13,7 +13,7 @@ export const db: DB[] = [
     hobbies: []
   },
   {
-    id: '2',
+    id: '45',
     username: 'test2',
     age: 30,
     hobbies: ['gaming', 'typing']
