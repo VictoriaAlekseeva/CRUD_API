@@ -1,8 +1,9 @@
 import http from 'http';
 import { db, User } from './dataBase'
 import { getUserById } from './helpers/getUserById';
-import { createUser } from './helpers/createUser'
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
+import { createUser } from './helpers/createUser';
+import { isBodyValid } from './helpers/bodyValidation';
+import { validate as uuidValidate } from 'uuid';
 
 
 export const get = (url: string, res: http.ServerResponse<http.IncomingMessage> & {
@@ -13,10 +14,6 @@ export const get = (url: string, res: http.ServerResponse<http.IncomingMessage> 
   } else if (url?.startsWith('/api/users/')) {
     getUser(url, res)
   }
-  // else {
-  //   res.statusCode = 404;
-  //   res.end('Not Found');
-  // }
 }
 
 const getUser = (url: string, res: http.ServerResponse<http.IncomingMessage> & {
@@ -47,25 +44,28 @@ const getAllUsers = (url: string, res: http.ServerResponse<http.IncomingMessage>
   res.end(JSON.stringify(db, null, 2));
 }
 
-
 export const post = (url: string, req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage> & {
   req: http.IncomingMessage;
 }) => {
-  // Server should answer with status code 400 and corresponding message if request body does not contain required fields
-  //! добавить проверку типов
   let body = '';
   req.on('data', (chunk) => {
     body += chunk;
   });
   req.on('end', () => {
-    const { username, age, hobbies } = JSON.parse(body);
-    if (username && age && hobbies) {
-      const newUser = createUser(username, age, hobbies);
+    try {
+      const { username, age, hobbies } = JSON.parse(body);
+      const userData = JSON.parse(body);
+      if (!isBodyValid(username, age, hobbies)) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end('Request body does not contain required fields or field types are incorrect');
+        return
+      }
+      const newUser = createUser(userData.username, userData.age, userData.hobbies);
       res.writeHead(201, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(newUser));
-    } else {
+    } catch {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end('Request body does not contain required fields');
+      res.end('Invalid JSON body');
     }
   })
 }
@@ -73,7 +73,6 @@ export const post = (url: string, req: http.IncomingMessage, res: http.ServerRes
 export const put = (url: string, req: http.IncomingMessage, res: http.ServerResponse<http.IncomingMessage> & {
   req: http.IncomingMessage;
 }) => {
-
   let body = '';
   req.on('data', (chunk) => {
     body += chunk;
@@ -95,7 +94,7 @@ export const put = (url: string, req: http.IncomingMessage, res: http.ServerResp
       return;
     }
     const newUserData = JSON.parse(body);
-    const updateUser = {...user, ...newUserData};
+    const updateUser = { ...user, ...newUserData };
     db[userIndex] = updateUser;
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(updateUser));
