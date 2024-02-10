@@ -1,11 +1,11 @@
 import url from 'url';
 import http from 'http';
-import { middleware } from './middleware';
 import { get } from './requestHandlers';
 import 'dotenv/config';
+import {db} from './dataBase'
 
 export const runServer = () => {
-  const PORT = process.env.PORT || 4000;
+  try{const PORT = process.env.PORT || 4000;
 
   const server = http.createServer();
 
@@ -14,15 +14,17 @@ export const runServer = () => {
     console.log('request handler')
     switch (method) {
       case 'GET':
+        console.log(url)
         if (url) get(url, res)
-
         break;
-
     }
-
   });
 
   server.listen(PORT, () => {
     console.log(`listening on port ${PORT}`)
-  });
+  });} catch (err) {
+    console.error(err)
+  }
+
+
 }

@@ -1,5 +1,5 @@
 {
-  "exec": "node --loader ts-node/esm index.ts",
+  "exec": "node --no-warnings --loader ts-node/esm index.ts",
   "events": {
     "start": "cls || clear"
   },

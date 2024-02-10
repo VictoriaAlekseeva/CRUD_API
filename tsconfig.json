@@ -11,7 +11,7 @@
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "include": ["./*.ts", "src/*.ts"],
+  "include": ["./*.ts", "src/*.ts", "webpack.config.js"],
   "exclude": ["node_modules"],
   "ts-node": {
     "experimentalSpecifierResolution": "node",
