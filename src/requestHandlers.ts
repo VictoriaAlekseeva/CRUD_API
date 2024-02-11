@@ -2,7 +2,7 @@ import http from 'http';
 import { db, User } from './dataBase'
 import { getUserById } from './helpers/getUserById';
 import { createUser } from './helpers/createUser';
-import { isBodyValid } from './helpers/bodyValidation';
+import { isFullBodyValid, isPartBodyValid } from './helpers/bodyValidation';
 import { validate as uuidValidate } from 'uuid';
 
 
@@ -55,7 +55,7 @@ export const post = (url: string, req: http.IncomingMessage, res: http.ServerRes
     try {
       const { username, age, hobbies } = JSON.parse(body);
       const userData = JSON.parse(body);
-      if (!isBodyValid(username, age, hobbies)) {
+      if (!isFullBodyValid(username, age, hobbies)) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end('Request body does not contain required fields or field types are incorrect');
         return
@@ -78,26 +78,38 @@ export const put = (url: string, req: http.IncomingMessage, res: http.ServerResp
     body += chunk;
   });
   req.on('end', () => {
-    const userId = url.split('/')[3];
-    const userIndex = db.findIndex(user => user.id === userId);
-    const user = db[userIndex];
+    try {
+      const userId = url.split('/')[3];
+      const userIndex = db.findIndex(user => user.id === userId);
+      const user = db[userIndex];
+      const newUserData = JSON.parse(body);
 
-    if (!uuidValidate(userId)) {
+      if (!uuidValidate(userId)) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end('Invalid userId: has to be an uuid string');
+        return
+      }
+
+      if (!isPartBodyValid(newUserData)) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end('khggfkf');
+        return
+      }
+
+      if (!user) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ message: "User doesn't exist" }));
+        return;
+      }
+
+      const updateUser = { ...user, ...newUserData };
+      db[userIndex] = updateUser;
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(updateUser));
+    } catch {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end('Invalid userId: has to be an uuid string');
-      return
+      res.end('Invalid JSON body');
     }
-
-    if (!user) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: "User doesn't exist" }));
-      return;
-    }
-    const newUserData = JSON.parse(body);
-    const updateUser = { ...user, ...newUserData };
-    db[userIndex] = updateUser;
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(updateUser));
   })
 
 }
