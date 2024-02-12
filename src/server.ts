@@ -2,7 +2,6 @@ import url from 'url';
 import http from 'http';
 import { get, post, put, deleteUser } from './requestHandlers';
 import 'dotenv/config';
-import { db } from './dataBase'
 
 export const runServer = () => {
   try {
@@ -12,7 +11,11 @@ export const runServer = () => {
 
     server.on("request", (req, res) => {
       const { method, url } = req;
-      console.log('request handler')
+      if (url && !url.startsWith('/api/users')) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end('Invalid url');
+        return
+      }
       switch (method) {
         case ('GET'):
           console.log(url)
@@ -30,14 +33,16 @@ export const runServer = () => {
           console.log(url)
           if (url) deleteUser(url, req, res)
           break;
-        default: console.log("method doesn't support")
+        default:
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end("Method doesn't supports");
       }
     });
     server.listen(PORT, () => {
       console.log(`listening on port ${PORT}`)
     });
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
 
 

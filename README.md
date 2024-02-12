@@ -9,7 +9,7 @@ simple CRUD API uses in-memory database underneath
 - Go to downloaded folder.
 - Install dependencies: `npm install`.
 - Start server: `npm start:prod`.
-- Create .env file with PORT = 4000 or any other port by your choiсe
+- Create .env file with PORT = 4000 or any other port by your choiсe, but don't forget to write it in the url in case you copy it from examples
 - Now you can send requests to the address: `http://127.0.0.1:port_from_env` for exapmle with Postman.
 
 ## Usage
