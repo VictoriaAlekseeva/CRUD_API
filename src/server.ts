@@ -12,7 +12,7 @@ export const runServer = () => {
     server.on("request", (req, res) => {
       const { method, url } = req;
       if (url && !url.startsWith('/api/users')) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end('Invalid url');
         return
       }
